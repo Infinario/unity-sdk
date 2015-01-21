@@ -23,7 +23,7 @@ If this is the beginning of tracking of a new user, you need to first ```Identif
 All of the commands spawn a coroutine, so that they won't block the processing in your main application.
 
 ```
-infinario.Identify(customer_id, new Dictionary<String, Object> () {{"email","asdf@asdf.com"}});
+infinario.Identify (customer_id, new Dictionary<String, Object> () {{"email","asdf@asdf.com"}});
 ```
 
 For serialization we utilize small embedded MiniJSON parser. 
@@ -35,5 +35,5 @@ By default the time of the event is tracked as the epoch time,
 and diffed against the server time of Infinario before sending.
 
 ```
-infinario.Track("login");
+infinario.Track ("login");
 ```
