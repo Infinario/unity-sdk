@@ -23,11 +23,11 @@ namespace Infinario {
 		public abstract object JsonPayload {
 			get ;
 		}
-				
+		
 		public override String ToString() {
 			String s = "curl -X \'POST\' https://api.infinario.com/" + Endpoint + "  -H \"Content-type: application/json\" -d \'" +
 				Json.Serialize (JsonPayload) + "\'";
-
+			
 			return s;
 		}
 		
@@ -126,7 +126,7 @@ namespace Infinario {
 				return "crm/events";
 			}
 		}
-
+		
 		public override object JsonPayload {
 			get { 
 				if (Properties != null) {
@@ -150,9 +150,9 @@ namespace Infinario {
 	}
 	
 	public interface InfinarioApi {
-
-		void Update (object properties);
 		
+		void Update (object properties);
+		void Identify(object customer);		
 		void Identify(object customer,object properties);		
 		void Identify (String customer, object properties);
 		
@@ -165,16 +165,16 @@ namespace Infinario {
 	}
 	
 	public class Infinario : InfinarioApi {
-
+		
 		private MonoBehaviour _coroutineObject;
-
+		
 		protected static IEnumerator PostJsonCoroutine(Uri url, string postdata) {
 			byte[] data = Encoding.UTF8.GetBytes(postdata);
 			Dictionary<string,string> t = new Dictionary<string,string>();
 			t.Add ("Content-type", "application/json");
 			WWW req = new WWW(url.ToString(), data, t);
 			yield return req;
-
+			
 			Dictionary<string, object> data_result = (Dictionary<string, object>) Json.Deserialize(req.text);
 			if (((bool) data_result ["success"]) == true) {
 				Debug.Log("Infinario: Posting " + postdata + " to " + url.ToString() + " resulted in " + req.text);
@@ -182,12 +182,12 @@ namespace Infinario {
 				Debug.LogError("Infinario: Posting " + postdata + " to " + url.ToString() + " resulted in " + req.text);
 			}
 		}
-
+		
 		protected void PostJson(Uri url, string postdata){
 			StartCoroutine(PostJsonCoroutine(url, postdata));
-
+			
 		}
-
+		
 		private void StartCoroutine(IEnumerator coroutine){
 			if (_coroutineObject == null) {
 				var go = new GameObject("Infinario Coroutines");
@@ -200,24 +200,37 @@ namespace Infinario {
 		protected readonly String CompanyToken;
 		protected readonly Uri Target;
 		protected object Customer;
-
+		
 		public Infinario(String companyToken, String target, object customer) {
 			if (customer is String) {
 				Customer =  new Dictionary<string, string>(){{"registered",(string) customer}};
 			} else {
 				Customer = customer;
-
+				
 			}
 			CompanyToken = companyToken;
 			Target = new  Uri(target);
 		}
+		
+		public Infinario(String companyToken) {
+			CompanyToken = companyToken;
+			Target = new Uri("https://api.infinario.com/");
+			Customer =  new Dictionary<String, String> () {{"registered",""}};
+		}
+		
+		public Infinario(String companyToken, String target) {
+			CompanyToken = companyToken;
+			Target = new Uri(target);
+			Customer =  new Dictionary<String, String> () {{"registered",""}};
+		}
+		
 		
 		public Infinario(String companyToken, String target, string customer) {
 			CompanyToken = companyToken;
 			Target = new Uri(target);
 			Customer =  new Dictionary<String, String> () {{"registered",customer}};
 		}
-
+		
 		public Infinario(String companyToken, Uri target, object customer) {
 			CompanyToken = companyToken;
 			Target = target;
@@ -237,6 +250,10 @@ namespace Infinario {
 		
 		public void Update(object properties){
 			ScheduleCustomer(CompanyToken, Customer, properties);
+		}
+		
+		public void Identify(object customer){
+			Identify (customer, null);
 		}
 		
 		public void Identify(object customer, object properties){
@@ -280,5 +297,5 @@ namespace Infinario {
 		}
 		
 	}
-
+	
 }
