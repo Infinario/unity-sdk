@@ -172,7 +172,9 @@ namespace Infinario {
 			byte[] data = Encoding.UTF8.GetBytes(postdata);
 			Dictionary<string,string> t = new Dictionary<string,string>();
 			t.Add ("Content-type", "application/json");
+			
 			WWW req = new WWW(url.ToString(), data, t);
+			Debug.Log("Infinario: Posting " + postdata + " to " + url.ToString());
 			yield return req;
 			
 			Dictionary<string, object> data_result = (Dictionary<string, object>) Json.Deserialize(req.text);
@@ -253,7 +255,13 @@ namespace Infinario {
 		}
 		
 		public void Identify(object customer){
-			Identify (customer, null);
+			if (customer is String) {
+				Customer =  new Dictionary<string, string>(){{"registered",(string) customer}};
+			} else {
+				Customer = customer;
+				
+			}
+			ScheduleCustomer(CompanyToken, Customer, null);
 		}
 		
 		public void Identify(object customer, object properties){
@@ -263,12 +271,12 @@ namespace Infinario {
 				Customer = customer;
 				
 			}
-			ScheduleCustomer(CompanyToken, customer, properties);
+			ScheduleCustomer(CompanyToken, Customer, properties);
 		}
 		
 		public void Identify(String customer, object properties){
 			Customer = new Dictionary<String, String> () {{"registered",customer}};
-			ScheduleCustomer (CompanyToken, customer, properties);
+			ScheduleCustomer (CompanyToken, Customer, properties);
 		}
 		
 		protected void ScheduleCustomer(String Company, object Customer, object Properties){
