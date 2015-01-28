@@ -15,7 +15,7 @@ Setting ```customer_id = "123-asdf"``` is equivalent to ```customer_id = new Dic
 
 
 ```
-var infinario = new Infinario.Infinario(project_token);
+Infinario.Infinario infinario = new Infinario.Infinario(project_token);
 ```
 
 If this is the beginning of tracking of a new user, you need to first ```Identify``` him against the server.
