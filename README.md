@@ -4,7 +4,6 @@ Infinario Android SDK is available in this Git repository: <a href="https://git
 
 ## Installation
 
-Sources are readily available, as well as an exported unitypackage in the root of this repository.
 The most straightforward way to install the SDK is to copying the contents of the source/Assets/Scripts directory to your Unity project's Scripts/ directory.
 
 ## Usage
