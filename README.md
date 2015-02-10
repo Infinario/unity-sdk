@@ -13,7 +13,7 @@ The most straightforward way to install the SDK is to copying the contents of th
 To start tracking, you need to know your ```company_token``` and create an instance of the ```InfinarioApi``` class using it. You can also pass a second (optional) parameter to override the URL of the Infinario API.
 
 ```
-var infinario = new InfinarioApi(company_token);
+var infinario = new Infinario.Infinario(<your_company_token>);
 ```
 
 The SDK automatically creates a new anonymous player whenever started, or loads the last player it has seen on the device. You can control the identity of the current user by calling the ```Identify``` method with a string parameter denoting his registration name.
@@ -32,7 +32,7 @@ infinario.Update(new Dictionary<string, object> () {{"gender","f"}, {"age",1990}
 
 ## Tracking
 
-The SDK collects and sends all tracked events continuously to the Infinario servers. However, if your application goes offline, the SDK guarantees you to re-send the events once online again. This synchronization is transparent to you and happens in the background.
+The client collects and sends all tracked events continuously to the Infinario servers. However, if your application goes offline, the SDK guarantees you to re-send the events once online again. This synchronization is transparent to you and happens in the background.
 
 You track various events by utilizing the ```Track``` function.
 The only required field is a string describing the type of your event.
@@ -45,3 +45,6 @@ As with players, you can attach properties to each event by leveraging the ```pr
 infinario.Track("login");
 ```
 
+## Session Management
+
+The client manages sessions automatically and transparently, with a 20 minute inactivity timeout. Session events ```session_start``` and ```session_end``` are always tracked to the current player and you can find them in your Infinario application in the Customer screen.
