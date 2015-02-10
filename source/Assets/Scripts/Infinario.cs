@@ -23,15 +23,23 @@ namespace Infinario {
 		/// </summary>
 		/// <param name="name">Any string by which you wish to identify the player ().</param>
 		/// <param name="properties">An optional dictionary of (new) properties to add to this player.</param>
-		void Identify (String name, object properties);			
-		void Identify ();
+		void Identify (String name, object properties);
 
+		/// <summary>
+		/// Tracks an event for the current player.
+		/// </summary>
+		/// <param name="type">Event type - you choose the name.</param>
+		/// <param name="properties">Optional properties (a dictionary).</param>
+		/// <param name="time">Optional timestamp denoting when the event took place. If you want to be 100% sure about compatibility, use Infinario.Command.Epoch() as a way of obtaining the timestamp. If this parameter is ommited, timestamp when command created is used.</param>
 		void Track (String type, object properties, long time);		
 		void Track (String type, long time);
 		void Track (String type, object properties);
 
+		/// <summary>
+		/// Updates the current player's properties.
+		/// </summary>
+		/// <param name="properties">A dictionary of properties you wish to update.</param>
 		void Update (object properties);
-
 	}
 
 	#endregion
@@ -213,7 +221,7 @@ namespace Infinario {
 				Platform = obj ["platform"].ToString();
 				Device = obj ["device"].ToString();
 				Cookie = obj ["cookieId"].ToString();
-				if(obj.ContainsKey("registered")){
+				if(obj.ContainsKey("registeredId")){
 					Registered = obj ["registeredId"].ToString();
 				}
 				IsValid = true;
@@ -240,6 +248,11 @@ namespace Infinario {
 			}
 			return dict;
 		}
+
+		public override string ToString ()
+		{
+			return Json.Serialize (this.ToDict());
+		}
 	}
 
 	public interface ISessionPersistenceAdapter {
@@ -255,7 +268,7 @@ namespace Infinario {
 		}
 
 		public InfinarioSessionData LoadSession() {
-			var sessionStr = PlayerPrefs.GetString (SESSION_PREF);			
+			var sessionStr = PlayerPrefs.GetString (SESSION_PREF);		
 			return (String.IsNullOrEmpty(sessionStr) ? null : new InfinarioSessionData (sessionStr));
 		}
 	}
@@ -266,8 +279,8 @@ namespace Infinario {
 	/// Represents a session.
 	/// </summary>
 	public class InfinarioSession {		
-		public const long MAX_SESSION_TIMEOUT = 15;//20*60;
-		public const long TIMEOUTED_SESSION_OFFSET = 3;//30;
+		public const long MAX_SESSION_TIMEOUT = 20*60;
+		public const long TIMEOUTED_SESSION_OFFSET = 30;
 		
 		private static ISessionPersistenceAdapter SessionPersistenceAdapter = new SessionPrefPersistenceAdapter();
 		private static CommandFn ScheduleCommandFunc;
@@ -316,7 +329,6 @@ namespace Infinario {
 		/// <param name="data">Valid session data.</param>
 		/// <param name="scheduleCommandFunc">Scheduling function.</param>
 		private static void EndSession (InfinarioSessionData data, SessionExpirationReason expirationReason) {
-			Debug.Log ("Ending session " + data.Cookie + " LastSeen = " + data.LastSeenTsp + " Started: " + data.StartTsp);
 			var duration = data.LastSeenTsp - data.StartTsp + (expirationReason == SessionExpirationReason.Timeout ? TIMEOUTED_SESSION_OFFSET : 0);
 			var eventProps = new Dictionary<string,object> {
 				{"platform",data.Platform},
@@ -333,7 +345,6 @@ namespace Infinario {
 		}
 
 		private static InfinarioSessionData NewSession (string cookieId = null, string registeredId = null) {
-			Debug.Log ("Starting session " + cookieId);
 			string cookie = (String.IsNullOrEmpty(cookieId) ? InfinarioSessionHelper.GenerateGUID () : cookieId);
 			InfinarioSessionData data = new InfinarioSessionData (Command.Epoch(),
 			                                                      Command.Epoch(),
@@ -380,44 +391,35 @@ namespace Infinario {
 	    public void KeepAlive(){
 			var expirationStatus = this.TestExpiration ();
 			if (expirationStatus != SessionExpirationReason.NotExpired) {
-				Debug.Log ("Terminating session because "+expirationStatus);
 				EndSession (this.SessionData, expirationStatus);
 				this.SessionData = NewSession (SessionData.Cookie, SessionData.Registered);
 			}
 			this.SessionData.LastSeenTsp = Command.Epoch ();
-			Debug.Log ("Ping session @"+SessionData.LastSeenTsp);
 			Persist ();
 		}
 			  
-		public void UpdateIdentity(string newCookie, string newRegistered, object properties) {
+		public void UpdateIdentity(string newRegistered) {
 			bool registeredEqual = String.Equals (newRegistered, SessionData.Registered);
 			bool newRegisteredSet = !String.IsNullOrEmpty (newRegistered);
 			bool oldRegisteredSet = !String.IsNullOrEmpty (SessionData.Registered);
-			bool newCookieSet = !String.IsNullOrEmpty (newCookie);
 
 			if (newRegisteredSet) {
 				bool newSession = oldRegisteredSet && !registeredEqual;
+				string freshCookie = InfinarioSessionHelper.GenerateGUID ();
+
 				if(newSession) {
-					Debug.Log (newRegistered +" ...Ending session for " +  SessionData.Registered);
-					EndSession(SessionData, SessionExpirationReason.Logout);
-					this.SessionData = NewSession(SessionData.Cookie, newRegistered);
+					EndSession(SessionData, SessionExpirationReason.Logout);					
+					this.SessionData = NewSession(freshCookie, newRegistered);
+				} else if (oldRegisteredSet){
+					this.SessionData.Cookie = freshCookie;
 				}
 			}
 
-			if (newCookieSet){
-				this.SessionData.Cookie = newCookie;
-			}
 			if (newRegisteredSet){
 				this.SessionData.Registered = newRegistered;
 			}						
 			Persist ();		
-		}
-		
-		public void ClearIdentity() {
-			EndSession (this.SessionData,SessionExpirationReason.Logout);
-			this.SessionData = NewSession (this.SessionData.Cookie, null);
-			Persist ();
-		}
+		}		
 	}
 
 	static class InfinarioSessionHelper {
@@ -486,13 +488,8 @@ namespace Infinario {
 
 		#region Public API
 		public void Identify(String name, object properties=null){
-			Session.UpdateIdentity (null,name, properties);
+			Session.UpdateIdentity (name);
 			ScheduleCommand (new CustomerCommand(InfinarioSession.CompanyToken,Session.Cookie, Session.Registered, properties));
-		}
-
-		public void Identify() {
-//			Debug.Log ("omg");
-			Session.ClearIdentity ();
 		}
 
 		public void Track(String EventType, object Properties, long Time){
@@ -532,7 +529,6 @@ namespace Infinario {
 		public virtual void ScheduleCommand(Command command){
 			List<object> lst = new List<object> ();
 			lst.Add (command.BulkSerialization());
-			Debug.Log ("Add cmd: "  + Json.Serialize (command.BulkSerialization()));
 			CommandQueue.MultiEnqueue(lst);
 		}
 
@@ -568,16 +564,13 @@ namespace Infinario {
 
 				// Decide if we process retry commands or new commands in this round
 				List<object> commands = CommandQueue.BulkDequeue(true);
-//				Debug.Log (String.Format ("CommandQ: {0}", CommandQueue.ElementCount));
 
 				if (commands.Count > 0){
-//					Debug.Log (String.Format ("-----{0} elements in execution queue, prefs is {1}", commands.Count, PlayerPrefs.GetString("infinario_event_queue")));
-
 					// 1B: Prepare the http components
 					var httpBody = Json.Serialize(new Dictionary<string,object> {{"commands", commands}});
 					byte[] httpBodyBytes = Encoding.UTF8.GetBytes(httpBody);
 					Dictionary<string,string> httpHeaders = new Dictionary<string,string>{ {"Content-type", "application/json"} };
-
+				
 					// 2. Send the bulk API request
 					WWW req = new WWW(httpTarget, httpBodyBytes, httpHeaders); //TODO: we could add a timeout functionality
 					yield return req;
@@ -585,12 +578,9 @@ namespace Infinario {
 					// 3A: Check response for errors
 					if (!String.IsNullOrEmpty(req.error)){
 						consecutiveFailedRequests++;
-//						Debug.Log (String.Format ("Retrying {0} commands.", commands.Count));
 					} else{
 						// 3B. Parse the API response
 						var responseBody = req.text;
-//						Debug.Log("[Infinario]: API responded to: " + httpBody + " @ " + apiTarget+INFINARIO_API_BULK_ROUTE + " with: " + responseBody);
-
 						Dictionary<string, object> apiResponse = (Dictionary<string, object>) Json.Deserialize(responseBody);
 						bool success = (bool) apiResponse["success"];
 						if(success){
@@ -600,14 +590,11 @@ namespace Infinario {
 							var retryCommands = ExtractRetryCommands(apiResponse,commands);
 							CommandQueue.MultiDequeue(commands.Count); //remove every command from this request
 							CommandQueue.MultiPush(retryCommands);     //re-add failed commands with the highest priority
-//							Debug.Log (String.Format ("Retrying {0} commands.", retryCommands.Count));
 						} else {
 							consecutiveFailedRequests++;
 						}
 					}
 
-				} else {
-//					Debug.Log ("[Infinario] No commands to send.");
 				}
 
 				// 5. Detemine wait time and go idle.
@@ -615,9 +602,8 @@ namespace Infinario {
 				if(consecutiveFailedRequests == 0 && CommandQueue.ElementCount > 0){
 					waitSeconds = 0f;
 				}
-				waitSeconds = Math.Min (waitSeconds, InfinarioSession.MAX_SESSION_TIMEOUT - 1f);
+				waitSeconds = Math.Min (waitSeconds, InfinarioSession.MAX_SESSION_TIMEOUT - 3f);
 
-//				Debug.Log (String.Format ("[Infinario] Waiting for {0} seconds.", waitSeconds));
 				yield return new WaitForSeconds(waitSeconds);
 			}
 		}
@@ -630,18 +616,13 @@ namespace Infinario {
 		/// <param name="sentCommands">Request dictionary object.</param>
 		private static List<object> ExtractRetryCommands(Dictionary<string,object> response,List<object> sentCommands) {
 			List<object> commandResponses = response ["results"] as List<object>;
-			if (commandResponses.Count != sentCommands.Count) {
-//				Debug.LogError (String.Format ("Failed assertion. Response from server contains {0} records, but the original request contained {1}.", commandResponses.Count, sentCommands.Count));
-			}
 
 			List<object> retryCommands = new List<object> ();
 			int idx = 0;
 			foreach (var cmdResponse in commandResponses) {
 				var cmdResponseDict = (Dictionary<string,object>)cmdResponse;
 				string status = (cmdResponseDict ["status"] as String).ToLower ();
-				if (status == "error") {
-//					Debug.LogError (String.Format ("API Request {0} failed with errors {1}.", sentCommands [idx], Json.Serialize (cmdResponseDict ["errors"])));
-				} else if (status == "retry") {
+				if (status.Equals ("retry")){
 					retryCommands.Add (sentCommands[idx]);
 				}
 				idx++;
