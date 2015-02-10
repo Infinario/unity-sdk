@@ -27,7 +27,7 @@ infinario.Identify(customer_id, new Dictionary<string, object> () {{"email","som
 
 There is a similar method called ```Update```, that takes only one parameter with a dictionary of properties you wish to set to the current player:
 ```
-infinario.Update(new Dictionary<string, object> () {{"gender","f"}, {"age",1990});
+infinario.Update(new Dictionary<string, object> () {{"gender","f"}, {"age",1990}});
 ```
 
 ## Tracking
