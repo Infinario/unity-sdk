@@ -437,17 +437,17 @@ namespace Infinario {
 				{RuntimePlatform.Android, "Android"},
 				{RuntimePlatform.IPhonePlayer, "iOS"},
 				{RuntimePlatform.LinuxPlayer, "Linux"},
-				{RuntimePlatform.MetroPlayerARM, "Windows"},
-				{RuntimePlatform.MetroPlayerX64, "Windows"},
-				{RuntimePlatform.MetroPlayerX86, "Windows"},
+				{RuntimePlatform.MetroPlayerARM, "Windows Phone"},
+				{RuntimePlatform.MetroPlayerX64, "Windows Store"},
+				{RuntimePlatform.MetroPlayerX86, "Windows Store"},
 				{RuntimePlatform.OSXDashboardPlayer, "Mac OS X"},
 				{RuntimePlatform.OSXEditor, "Mac OS X"},
 				{RuntimePlatform.OSXPlayer, "Mac OS X"},
 				{RuntimePlatform.OSXWebPlayer, "Mac OS X"},
-				{RuntimePlatform.WP8Player, "Windows Mobile"},
-				{RuntimePlatform.WindowsEditor, "Windows"},
-				{RuntimePlatform.WindowsPlayer, "Windows"},
-				{RuntimePlatform.WindowsWebPlayer, "Windows"}
+				{RuntimePlatform.WindowsEditor, "Unity Editor"},
+				{RuntimePlatform.WindowsPlayer, "Windows Standalone"},
+				{RuntimePlatform.WP8Player, "Windows Phone"},
+				{RuntimePlatform.WindowsWebPlayer, "Web Player"}
 			};
 			return (dict.ContainsKey (platform) ? dict [platform] : "Other");
 		}
