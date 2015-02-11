@@ -1,4 +1,4 @@
-# Infinario Unity SDK
+# Infinario Unity SDK (in 3 minutes)
 
 Infinario Unity SDK is available in this Git repository: <a href="https://github.com/infinario/unity-sdk">https://github.com/infinario/unity-sdk</a>. It provides tracking capabilities for your application.
 
