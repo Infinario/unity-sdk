@@ -48,7 +48,7 @@ infinario.Identify("player@example.com", new Dictionary<string,object> {
 infinario.Update(new Dictionary<string,object> {{"level", 1}}); // A shorthand for adding properties to the current customer
 ```
 ### Timestamps
-The SDK automatically adds timestamps to all events. To specify your own timestamp, use one of the following overriden methods:
+The SDK automatically adds timestamps to all events. To specify your own timestamp, use one of the following method overloads:
 ```
 infinario.Track("my_player_action", <long_your_tsp>);
 infinario.Track("my_player_action", <properties> , <long_your_tsp>);	
@@ -56,7 +56,7 @@ infinario.Track("my_player_action", <properties> , <long_your_tsp>);
 *Tip:* To obtain the current UNIX timestamp, you can use  ```Infinario.Command.Epoch()```.
 
 ###Player Sessions
-Infinario automatically manages player sessions. Each session starts with a ```session_start``` event and ends with ```session_end```. Each of these events denotes the boundaries of a single player's session, ended by either session timeout (currently 20 minutes of inactivity) or by player logout (caused by calling ```Identify``` on a different player).
+Infinario automatically manages player sessions. Each session starts with a ```session_start``` event and ends with ```session_end```. Sessions are terminated by either timeout (currently 20 minutes of inactivity) or on player logout (caused by calling ```Identify``` on a different player).
 
 Once started, the SDK tries to recreate the previous session from its persistent cache. If it fails to, or the session has already expired it automatically creates a new one.
 
