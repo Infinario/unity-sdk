@@ -1,66 +1,72 @@
-# Infinario Unity SDK
+# Getting started with Infinario Unity SDK (in 3 minutes)
 
-Infinario Android SDK is available in this Git repository: <a href="https://github.com/infinario/unity-sdk">https://github.com/infinario/unity-sdk</a>.
+Infinario Unity SDK is available in this Git repository: <a href="https://github.com/infinario/unity-sdk">https://github.com/infinario/unity-sdk</a>. It provides tracking capabilities for your application.
 
 ## Installation
 
-Sources are readily aviable, as well as an exported unitypackage in the root of this repository.
+* Download or clone this repository from your command line: ```git clone https://github.com/Infinario/unity-sdk.git```
+* Copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
 
 ## Usage
 
-### Basic Interface
+### Basic Tracking
 
-To start tracking, you need to know your ```project_token``` and generate a unique ```customer_id``` for the customer you are about to track. The unique ```customer_id``` can either be string, or an object representing the ```customer_ids``` as referenced in [the API guide](http://guides.infinario.com/technical-guide/rest-client-api/#Detailed_key_descriptions).
-Setting ```customer_id = "123-asdf"``` is equivalent to ```customer_id = new Dictionary<String, String> () {{"registered","123-adf"}};```
-
+To start tracking, you need to know your ```company_token```. To initialize the tracking, simply create an instance of the ```Infinario``` class:
 
 ```
-Infinario.Infinario infinario = new Infinario.Infinario(project_token);
+var infinario = new Infinario.Infinario(<your_company_token>);
 ```
 
-If this is the beginning of tracking of a new user, you need to first ```Identify``` him against the server.
-
-All of the commands spawn a coroutine, so that they won't block the processing in your main application.
-
+Now you can track events by calling the ```Track``` method:
 ```
-//this will set the attribute 'registered' to customer_id
-infinario.Identify(customer_id);
+infinario.Track("my_user_action");
 ```
+What happens now, is that an event called ```my_user_action``` is recorded for the current player.
 
-Identifying anonymous user with a cookie.
-
+### Identifying Players
+To control the identity of the current player use the ```Identify``` method. By calling
 ```
-//this will set the attribute 'cookie' for anonymous player
-infinario.Identify(new Dictionary<string, string>(){ {"registered", customer_id}});
+infinario.Identify("player@example.com");
 ```
 
-Identifying user with a cookie with new registered id.
+you can register a new player in Infinario. All events you track by the ```Track``` method from now on will belong to this player. To switch to an existing player, simply call ```Identify``` with his name. You can switch the identity of the current player as many times as you need to.
 
-```
-//this will set the attribute 'registered' for player with attribute 'cookie' cookie-of-anonymous-player
-infinario.Identify(new Dictionary<string, string>(){ {"registered", customer_id}, {"cookie", cookie-of-anonymous-player } });
-```
+### Anonymous Players
+Up until you call ```Identify``` for the first time, all tracked events belong to an anonymous player (internally identified with a cookie). Once you call ```Identify```, the previously anonymous player is automatically merged with the newly identified player.
 
-For serialization we utilize small embedded MiniJSON parser. 
-
-You track various events by utilizing the Track function.
-It assumes you want to track the customer you identified by ```Identify```.
-The only required field is a string describing the type of your event.
-By default the time of the event is tracked as the epoch time,
-and diffed against the server time of Infinario before sending.
-
+### Adding Properties
+Both ```Identify``` and ```Track``` accept an optional dictionary parameter that can be used to add custom information (properties) to the respective entity. Usage is straightforward:
 ```
-infinario.Track("login");
-```
+infinario.Track("my_player_action", new Dictionary<string,object> {
+                                                          {"daily_score", 4700}
+                                                        });                                       
 
-Tracking event with attributes:
+infinario.Identify("player@example.com", new Dictionary<string,object> {
+                                                          {"first_name", "John"},
+                                                          { "last_name", "Doe" }
+                                                        }); 
+infinario.Update(new Dictionary<string,object> {{"level", 1}}); // A shorthand for adding properties to the current customer
+```
+### Timestamps
+The SDK automatically adds timestamps to all events. To specify your own timestamp, use one of the following method overloads:
+```
+infinario.Track("my_player_action", <long_your_tsp>);
+infinario.Track("my_player_action", <properties> , <long_your_tsp>);	
+```
+*Tip:* To obtain the current UNIX timestamp, you can use  ```Infinario.Command.Epoch()```.
 
-```
-infinario.Track("quest", new Dictionary<string, string> () {{"status","completed"}, {"name","Defend castle"}});
-```
+###Player Sessions
+Infinario automatically manages player sessions. Each session starts with a ```session_start``` event and ends with ```session_end```. Sessions are terminated by either timeout (currently 20 minutes of inactivity) or on player logout (caused by calling ```Identify``` on a different player).
 
-Update currently identified customer:
+Once started, the SDK tries to recreate the previous session from its persistent cache. If it fails to, or the session has already expired it automatically creates a new one.
 
-```
-infinario.Update(new Dictionary<string, string> () {{"first_name","John"}, {"last_name","Wick"}});
-```
+###Offline Behavior
+
+Once instantized, the SDK collects and sends all tracked events continuously to the Infinario servers. 
+
+However, if your application goes offline, the SDK guarantees you to re-send the events once online again (up to a approximately 5k offline events). This synchronization is transparent to you and happens in the background.
+
+##Final Remarks
+- Make sure you create at most one instance of ```Infinario``` during your application lifetime.
+- If you wish to override some of the capabilities (e.g. session management), please note that we will not be able to give you any guarantees.
+
