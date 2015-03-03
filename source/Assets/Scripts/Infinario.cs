@@ -9,7 +9,7 @@ using System.Text;
 using MiniJSON;
 
 namespace Infinario {
-	using CommandFn = Func<Command,Void>;
+	public delegate void CommandFn(Command command);
 	#region Interfaces
 	public interface IInfinarioApi{
 		/// <summary>

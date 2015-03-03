@@ -5,7 +5,7 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 ## Installation
 
 * Download or clone this repository from your command line: ```git clone https://github.com/Infinario/unity-sdk.git```
-* Copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
+* Either run "sh install.sh path/to/your/unity/project/root", or copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
 
 ## Usage
 
