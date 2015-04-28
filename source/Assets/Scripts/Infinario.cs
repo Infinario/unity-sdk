@@ -464,8 +464,8 @@ namespace Infinario {
 
 		private const int MAX_BULK_REQUEST_SIZE = 49;
 
-		public readonly String CompanyToken;
-		protected readonly String Target;
+		public String CompanyToken;
+		protected String Target;
 
 		protected static PersistentBulkCommandQueue CommandQueue = new PersistentBulkCommandQueue ("events",MAX_BULK_REQUEST_SIZE);
 		private static InfinarioSession Session;
@@ -476,7 +476,15 @@ namespace Infinario {
 		/// </summary>
 		/// <param name="companyToken">Your company token.</param>
 		/// <param name="target">The base URI to the Infinario API (you usually do not have to set this parameter).</param>
-		public Infinario(String companyToken, String target = INFINARIO_API_URI) {
+		public Infinario(String companyToken, String target) {
+			this.InfinarioInitialize (companyToken, target);
+		}
+
+		public Infinario(String companyToken){
+			this.InfinarioInitialize (companyToken, INFINARIO_API_URI);
+		}
+
+		protected void InfinarioInitialize(String companyToken, String target){
 			this.CompanyToken = companyToken;
 			this.Target = target;
 
@@ -487,21 +495,29 @@ namespace Infinario {
 		#endregion
 
 		#region Public API
-		public void Identify(String name, object properties=null){
+		public void Identify(String name, object properties){
 			Session.UpdateIdentity (name);
 			ScheduleCommand (new CustomerCommand(InfinarioSession.CompanyToken,Session.Cookie, Session.Registered, properties));
+		}
+
+		public void Identify(String name){
+			this.Identify (name, null);
 		}
 
 		public void Track(String EventType, object Properties, long Time){
 			ScheduleCommand(new EventCommand(InfinarioSession.CompanyToken, Session.Cookie, Session.Registered, EventType, Properties, Time));
 		}
 		
-		public void Track(String EventType, long Time=long.MinValue){
+		public void Track(String EventType, long Time){
 			this.Track(EventType, null, Time == long.MinValue ? Command.Epoch() : Time);
 		}
 				
 		public void Track(String EventType,object Properties){
 			this.Track(EventType,Properties, Command.Epoch());
+		}
+
+		public void Track(String EventType){
+			this.Track (EventType, null, Command.Epoch ());
 		}
 	
 		public void Update(object properties){
