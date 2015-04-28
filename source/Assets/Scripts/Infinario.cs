@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using MiniJSON;
+using Infinario.MiniJSON;
 
 namespace Infinario {
 	public delegate void CommandFn(Command command);
