@@ -13,5 +13,8 @@
 /*.pidb
 /*.booproj
 
+# Ignore Mac DS_Store files
+*.DS_Store
+
 #Unity3D Generated File On Crash Reports
 sysinfo.txt
