@@ -5,7 +5,8 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 ## Installation
 
 * Download or clone this repository from your command line: ```git clone https://github.com/Infinario/unity-sdk.git```
-* Either use the Unity Editor to import the provided Infinario-SDK.unitypackage (Assets->Import Package->Custom Package...), or copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
+* For Unity C# use the Unity Editor to import the provided Infinario-SDK.unitypackage (Assets->Import Package->Custom Package...), or copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
+* For Unity JS copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Plugins/``` directory.
 
 ## Usage
 
@@ -14,7 +15,7 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 To start tracking, you need to know your ```company_token```. To initialize the tracking, simply create an instance of the ```Infinario``` class:
 
 ```
-var infinario = new Infinario.Infinario(<your_company_token>);
+var infinario = new Infinario.Infinario(“your_company_token”);
 ```
 
 Now you can track events by calling the ```Track``` method:
@@ -37,6 +38,9 @@ Up until you call ```Identify``` for the first time, all tracked events belong t
 ### Adding Properties
 Both ```Identify``` and ```Track``` accept an optional dictionary parameter that can be used to add custom information (properties) to the respective entity. Usage is straightforward:
 ```
+```
+C#
+```
 infinario.Track("my_player_action", new Dictionary<string,object> {
                                                           {"daily_score", 4700}
                                                         });                                       
@@ -46,6 +50,16 @@ infinario.Identify("player@example.com", new Dictionary<string,object> {
                                                           { "last_name", "Doe" }
                                                         }); 
 infinario.Update(new Dictionary<string,object> {{"level", 1}}); // A shorthand for adding properties to the current customer
+```
+JS
+```
+infinario.Track("my_player_action", {"daily_score": 4700});
+
+infinario.Identify("player@example.com", {"first_name": "John",
+                                          "last_name": "Doe"});
+
+infinario.Update({"level": 1}); // A shorthand for adding properties to the current customer
+
 ```
 ### Timestamps
 The SDK automatically adds timestamps to all events. To specify your own timestamp, use one of the following method overloads:
