@@ -330,12 +330,9 @@ namespace Infinario {
 		/// <param name="scheduleCommandFunc">Scheduling function.</param>
 		private static void EndSession (InfinarioSessionData data, SessionExpirationReason expirationReason) {
 			var duration = data.LastSeenTsp - data.StartTsp + (expirationReason == SessionExpirationReason.Timeout ? TIMEOUTED_SESSION_OFFSET : 0);
-			var eventProps = new Dictionary<string,object> {
-				{"os_name",data.Platform},
-				{"device_model",data.Device},
-				{"duration",duration},
-				{"reason", expirationReason}
-			};
+			var eventProps = InfinarioSessionHelper.getDeviceProperties();
+			eventProps.Add("duration", duration);
+			eventProps.Add("reason", expirationReason);
 			EventCommand sessionEndCommand = new EventCommand (data.CompanyToken,
 			                                                   data.Cookie, data.Registered,
 			                                                   "session_end",
@@ -357,10 +354,7 @@ namespace Infinario {
 		}
 
 		private static EventCommand GetSessionStartCommand(InfinarioSessionData data) {
-			var eventProps = new Dictionary<string,object> {
-				{"os_name",data.Platform},
-				{"device_model",data.Device}
-			};
+			var eventProps = InfinarioSessionHelper.getDeviceProperties();
 			return new EventCommand (data.CompanyToken,
                                      data.Cookie, data.Registered,
                                      "session_start",
@@ -429,6 +423,14 @@ namespace Infinario {
 				+"-"+String.Format("{0:X}", Convert.ToInt32(Command.Epoch()))              //Time
 					+"-"+String.Format("{0:X}", Convert.ToInt32(Time.time*1000000))        //Time in game
 					+"-"+String.Format("{0:X}", random.Next(1000000000));
+		}
+
+		public static Dictionary<string, object> getDeviceProperties(){
+			Dictionary<string, object> dict = new Dictionary<string, object>();
+			dict.Add("os_name", GetPlatform());
+			dict.Add("device_model", GetDevice());
+			dict.Add("os_version", SystemInfo.operatingSystem);
+			return dict;
 		}
 		
 		public static string GetPlatform() {
