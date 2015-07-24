@@ -42,8 +42,7 @@ Up until you call ```Identify``` for the first time, all tracked events belong t
 
 ### Adding Properties
 Both ```Identify``` and ```Track``` accept an optional dictionary parameter that can be used to add custom information (properties) to the respective entity. Usage is straightforward:
-```
-```
+
 C#
 ```
 infinario.Track("my_player_action", new Dictionary<string,object> {
@@ -79,20 +78,19 @@ infinario.Track("my_player_action", <properties> , <long_your_tsp>);
 ```
 *Tip:* To obtain the current UNIX timestamp, you can use  ```Infinario.Command.Epoch()```.
 
-###Player Sessions
+### Player Sessions
 Infinario automatically manages player sessions. Each session starts with a ```session_start``` event and ends with ```session_end```. Sessions are terminated by either timeout (currently 20 minutes of inactivity) or on player logout (caused by calling ```Identify``` on a different player).
 
 Once started, the SDK tries to recreate the previous session from its persistent cache. If it fails to, or the session has already expired it automatically creates a new one.
 
 if you use Android plugin, please call TrackAndroidSessionEnd somewhere at the end of the game loop.
 
-###Offline Behavior
+### Offline Behavior
 
 Once instantized, the SDK collects and sends all tracked events continuously to the Infinario servers. 
 
 However, if your application goes offline, the SDK guarantees you to re-send the events once online again (up to a approximately 5k offline events). This synchronization is transparent to you and happens in the background.
 
-##Final Remarks
+## Final Remarks
 - Make sure you create at most one instance of ```Infinario``` during your application lifetime.
 - If you wish to override some of the capabilities (e.g. session management), please note that we will not be able to give you any guarantees.
-
