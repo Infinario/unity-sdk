@@ -427,10 +427,17 @@ namespace Infinario {
 
 		public static Dictionary<string, object> getDeviceProperties(){
 			Dictionary<string, object> dict = new Dictionary<string, object>();
+			dict.Add("sdk", SDKInformation.name);
+			dict.Add("sdk_version", SDKInformation.version); 
 			dict.Add("os_name", GetPlatform());
 			dict.Add("device_model", GetDevice());
 			dict.Add("os_version", SystemInfo.operatingSystem);
 			return dict;
+		}
+
+		public static class SDKInformation{
+			public static String version = "1.1.0";
+			public static String name = "Unity SDK";
 		}
 		
 		public static string GetPlatform() {
