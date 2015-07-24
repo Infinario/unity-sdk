@@ -8,6 +8,10 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 * For Unity C# use the Unity Editor to import the provided Infinario-SDK.unitypackage (Assets->Import Package->Custom Package...), or copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
 * For Unity JS copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Plugins/``` directory.
 
+## Plugins
+
+* <strong>iOS Plugin</strong> - use the Unity Editor to import the provided ```C_SHARP_IOS_PLUGIN.unitypackage``` for C# or ```JS_IOS_PLUGIN.unitypackage``` for JS (Assets->Import Package->Custom Package...).<br>For this plugin you need Store.framework, AdSupport.framework and sqlite3.dylib. If they are missing in your project, you can add them manually in xcode throught Build Phases -> Link Binary With Libraries
+
 ## Usage
 
 ### Basic Tracking
