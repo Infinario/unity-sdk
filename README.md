@@ -10,6 +10,7 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 
 ## Plugins
 
+* <strong>Android Plugin</strong> - use the Unity Editor to import the provided ```C_SHARP_ANDROID_PLUGIN.unitypackage``` for C# or ```JS_ANDROID_PLUGIN.unitypackage``` for JS (Assets->Import Package->Custom Package...).<br>Plugin contains Infinario Android SDK v1.1.1, Google Play Services and Android Support v4 libraries.
 * <strong>iOS Plugin</strong> - use the Unity Editor to import the provided ```C_SHARP_IOS_PLUGIN.unitypackage``` for C# or ```JS_IOS_PLUGIN.unitypackage``` for JS (Assets->Import Package->Custom Package...).<br>For this plugin you need Store.framework, AdSupport.framework and sqlite3.dylib. If they are missing in your project, you can add them manually in xcode throught Build Phases -> Link Binary With Libraries
 
 ## Usage
@@ -82,6 +83,8 @@ infinario.Track("my_player_action", <properties> , <long_your_tsp>);
 Infinario automatically manages player sessions. Each session starts with a ```session_start``` event and ends with ```session_end```. Sessions are terminated by either timeout (currently 20 minutes of inactivity) or on player logout (caused by calling ```Identify``` on a different player).
 
 Once started, the SDK tries to recreate the previous session from its persistent cache. If it fails to, or the session has already expired it automatically creates a new one.
+
+if you use Android plugin, please call TrackAndroidSessionEnd somewhere at the end of the game loop.
 
 ###Offline Behavior
 
