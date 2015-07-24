@@ -5,7 +5,7 @@ Infinario Unity SDK is available in this Git repository: <a href="https://githu
 ## Installation
 
 * Download or clone this repository from your command line: ```git clone https://github.com/Infinario/unity-sdk.git```
-* For Unity C# use the Unity Editor to import the provided Infinario-SDK.unitypackage (Assets->Import Package->Custom Package...), or copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Scripts/``` directory.
+* For Unity C# use the Unity Editor to import the provided ```C_SHARP_UNITY_SDK.unitypackage``` (Assets->Import Package->Custom Package...).
 * For Unity JS copy the contents of ```source/Assets/Scripts``` directory to your Unity project's ```Plugins/``` directory.
 
 ## Plugins
