@@ -61,6 +61,11 @@ infinario.Identify("player@example.com", {"first_name": "John",
 infinario.Update({"level": 1}); // A shorthand for adding properties to the current customer
 
 ```
+### Virtual payment
+If you use virtual payments (e.g. purchase with in-game gold, coins, ...) in your project, you can track them with a call to TrackVirtualPayment.
+```
+infinario.TrackVirtualPayment ("gold", 3, "sword", "sword_type”);
+```
 ### Timestamps
 The SDK automatically adds timestamps to all events. To specify your own timestamp, use one of the following method overloads:
 ```

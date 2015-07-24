@@ -7,43 +7,11 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using Infinario.MiniJSON;
+using Infinario.Interface;
 
-namespace Infinario {
+namespace Infinario.Unity {
 	public delegate void CommandFn(Command command);
-	#region Interfaces
-	public interface IInfinarioApi{
-		/// <summary>
-		/// Identifies the current player with a name (corresponding to the field 'registered' in the customer's profile in Infinario). You can use this method to:
-		/// 	* identify an anonymous player/customer
-		/// 	* switch players/customer for which the subsequent tracking events apply.
-		/// 
-		/// Note on anonymous players/customers: 
-		/// 	Whenever you start tracking and Infinario SDK fails to load the current player's identity from your local cache, an anonymous player is created and all events are tracked for him. Once you call Identify, 
-		/// 	this player will keep all his events from back when he was anonymous (and be merged with an existing player if their name parameters match.)
-		/// </summary>
-		/// <param name="name">Any string by which you wish to identify the player ().</param>
-		/// <param name="properties">An optional dictionary of (new) properties to add to this player.</param>
-		void Identify (String name, object properties);
-
-		/// <summary>
-		/// Tracks an event for the current player.
-		/// </summary>
-		/// <param name="type">Event type - you choose the name.</param>
-		/// <param name="properties">Optional properties (a dictionary).</param>
-		/// <param name="time">Optional timestamp denoting when the event took place. If you want to be 100% sure about compatibility, use Infinario.Command.Epoch() as a way of obtaining the timestamp. If this parameter is ommited, timestamp when command created is used.</param>
-		void Track (String type, object properties, long time);		
-		void Track (String type, long time);
-		void Track (String type, object properties);
-
-		/// <summary>
-		/// Updates the current player's properties.
-		/// </summary>
-		/// <param name="properties">A dictionary of properties you wish to update.</param>
-		void Update (object properties);
-	}
-
-	#endregion
-
+	
 	/// <summary>
 	/// Abstract class representing an Infinario API command.
 	/// </summary>
@@ -485,18 +453,13 @@ namespace Infinario {
 		/// </summary>
 		/// <param name="companyToken">Your company token.</param>
 		/// <param name="target">The base URI to the Infinario API (you usually do not have to set this parameter).</param>
-		public Infinario(String companyToken, String target) {
-			this.InfinarioInitialize (companyToken, target);
-		}
-
-		public Infinario(String companyToken){
-			this.InfinarioInitialize (companyToken, INFINARIO_API_URI);
-		}
-
-		protected void InfinarioInitialize(String companyToken, String target){
+		public Infinario (string companyToken, string target){
 			this.CompanyToken = companyToken;
-			this.Target = target;
-
+			if (target == null) {
+				target = INFINARIO_API_URI;
+			}
+			this.Target = target;	
+			
 			Session = InfinarioSession.InitializeSession(companyToken,ScheduleCommand);
 			this.StartSendLoop ();
 		}
@@ -504,33 +467,78 @@ namespace Infinario {
 		#endregion
 
 		#region Public API
-		public void Identify(String name, object properties){
+		public void Identify (String name, object properties){
 			Session.UpdateIdentity (name);
 			ScheduleCommand (new CustomerCommand(InfinarioSession.CompanyToken,Session.Cookie, Session.Registered, properties));
 		}
-
-		public void Identify(String name){
+		
+		public void Identify (String name){
 			this.Identify (name, null);
 		}
-
-		public void Track(String EventType, object Properties, long Time){
+		
+		public void Track (String EventType, object Properties, long Time){
 			ScheduleCommand(new EventCommand(InfinarioSession.CompanyToken, Session.Cookie, Session.Registered, EventType, Properties, Time));
 		}
 		
-		public void Track(String EventType, long Time){
+		public void Track (String EventType, long Time){
 			this.Track(EventType, null, Time == long.MinValue ? Command.Epoch() : Time);
 		}
-				
-		public void Track(String EventType,object Properties){
+		
+		public void Track (String EventType,object Properties){
 			this.Track(EventType,Properties, Command.Epoch());
 		}
-
-		public void Track(String EventType){
+		
+		public void Track (String EventType){
 			this.Track (EventType, null, Command.Epoch ());
 		}
-	
-		public void Update(object properties){
+		
+		public void Update (object properties){
 			ScheduleCommand(new CustomerCommand(InfinarioSession.CompanyToken, Session.Cookie, Session.Registered, properties));
+		}
+		
+		public void TrackVirtualPayment (String currency, long amount, String itemName, String itemType){
+			Dictionary<string, object> properties = InfinarioSessionHelper.getDeviceProperties ();
+			properties.Add ("currency", currency);
+			properties.Add ("amount", amount);
+			properties.Add ("item_name", itemName);
+			properties.Add ("item_type", itemType);
+			this.Track ("virtual_payment", properties);
+		}
+		
+		public void TrackAndroidSessionEnd (){
+			Debug.Log("Method TrackAndroidSessionEnd works just with Android plugin for now");
+		}
+		
+		public void ClearStoredData (){
+			Debug.Log("Method ClearStoredData works just with Android or iOS plugin for now");
+		}
+		
+		public void EnablePushNotifications (String senderId,String iconName){
+			Debug.Log("Method EnablePushNotifications works just with Android or iOS plugin for now");
+		}
+		
+		public void EnablePushNotifications (String senderId){
+			Debug.Log("Method EnablePushNotifications works just with Android or iOS plugin for now");
+		}
+		
+		public void DisablePushNotifications (){
+			Debug.Log("Method DisablePushNotifications works just with Android or iOS plugin for now");
+		}
+		
+		public void EnableAutomaticFlushing (){
+			Debug.Log("Method EnableAutomaticFlushing works just with Android or iOS plugin for now");
+		}
+		
+		public void DisableAutomaticFlushing (){
+			Debug.Log("Method DisableAutomaticFlushing works just with Android or iOS plugin for now");
+		}
+			
+		public void Flush (){
+			Debug.Log("Method Flush works just with Android or iOS plugin for now");
+		}
+		
+		public void SetAppleDeviceToken (){
+			Debug.Log("Method SetAppleDeviceToken works just with iOS plugin for now");
 		}
 
 		/// <summary>
