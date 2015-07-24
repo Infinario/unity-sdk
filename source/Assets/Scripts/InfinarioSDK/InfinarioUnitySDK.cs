@@ -218,8 +218,8 @@ namespace Infinario {
 				StartTsp = (long)obj ["lastSessionStartTsp"];
 				LastSeenTsp =  (long)obj["lastSeenTsp"];
 				CompanyToken = obj ["companyToken"].ToString();
-				Platform = obj ["platform"].ToString();
-				Device = obj ["device"].ToString();
+				Platform = obj ["os_name"].ToString();
+				Device = obj ["device_model"].ToString();
 				Cookie = obj ["cookieId"].ToString();
 				if(obj.ContainsKey("registeredId")){
 					Registered = obj ["registeredId"].ToString();
@@ -239,8 +239,8 @@ namespace Infinario {
 				{"lastSessionStartTsp", StartTsp},
 				{"lastSeenTsp", LastSeenTsp},
 				{"companyToken", CompanyToken},
-				{"platform",Platform},
-				{"device",Device},
+				{"os_name",Platform},
+				{"device_model",Device},
 				{"cookieId",Cookie}
 			};
 			if (Registered != null) {
@@ -331,8 +331,8 @@ namespace Infinario {
 		private static void EndSession (InfinarioSessionData data, SessionExpirationReason expirationReason) {
 			var duration = data.LastSeenTsp - data.StartTsp + (expirationReason == SessionExpirationReason.Timeout ? TIMEOUTED_SESSION_OFFSET : 0);
 			var eventProps = new Dictionary<string,object> {
-				{"platform",data.Platform},
-				{"device",data.Device},
+				{"os_name",data.Platform},
+				{"device_model",data.Device},
 				{"duration",duration},
 				{"reason", expirationReason}
 			};
@@ -358,8 +358,8 @@ namespace Infinario {
 
 		private static EventCommand GetSessionStartCommand(InfinarioSessionData data) {
 			var eventProps = new Dictionary<string,object> {
-				{"platform",data.Platform},
-				{"device",data.Device}
+				{"os_name",data.Platform},
+				{"device_model",data.Device}
 			};
 			return new EventCommand (data.CompanyToken,
                                      data.Cookie, data.Registered,
