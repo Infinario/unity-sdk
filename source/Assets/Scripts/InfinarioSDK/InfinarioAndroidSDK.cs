@@ -71,11 +71,11 @@ namespace Infinario.Android {
 		}
 
 		public void EnablePushNotifications(String senderId,string iconName){
-			androidSDK.Call("enablePushNotifications", new object[]{senderID, iconName});
+			androidSDK.Call("enablePushNotifications", new object[]{senderId, iconName});
 		}
 
 		public void EnablePushNotifications(String senderId){
-			this.EnablePushNotifications (senderID, "infinario_notification_icon");
+			this.EnablePushNotifications (senderId, "infinario_notification_icon");
 		}
 
 		public void DisablePushNotifications(){
