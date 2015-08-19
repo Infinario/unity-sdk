@@ -404,7 +404,7 @@ namespace Infinario.Unity {
 		}
 
 		public static class SDKInformation{
-			public static String version = "1.1.0";
+			public static String version = "1.1.1";
 			public static String name = "Unity SDK";
 		}
 		
