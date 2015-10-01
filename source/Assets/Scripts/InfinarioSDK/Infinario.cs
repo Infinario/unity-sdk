@@ -1,114 +1,129 @@
-﻿using UnityEngine;
 using System.Collections;
-using System;
-using System.Net;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
 using Infinario.Interface;
-using Infinario.Unity;
+using Infinario.SDK;
 
-namespace Infinario {
-
-	public class Infinario : IInfinarioApi{
-
-		IInfinarioApi implementation;
-	
-		public Infinario (String companyToken) : this(companyToken, null){
+namespace Infinario
+{
+	class Infinario
+	{
+		private IInfinario implementation;
+		private volatile static Infinario instance; 
+		private static object lockAccess = new object();
+		
+		private Infinario()
+		{
+			//Prepare for wrappers
+			implementation = new SDK.Unity ();
+		}
+		
+		public static Infinario GetInstance()
+		{
+			if (instance == null)
+				lock (lockAccess)
+				{
+					instance = new Infinario();
+				}
+				
+			return instance;
+		}
+		
+		public void Initialize(string projectToken)
+		{
+			Initialize (projectToken, null, null);
+		}
+		
+		public void Initialize(string projectToken, string appVersion)
+		{
+			Initialize (projectToken, appVersion, null);
+		}
+		
+		public void Initialize(string projectToken, string appVersion, string target)
+		{
+			implementation.Initialize (projectToken, appVersion, target);
+		}
+		
+		public void Identify(string registeredId)
+		{
+			Identify(new Dictionary<string, object>() { { Constants.ID_REGISTERED, registeredId } }, new Dictionary<string, object>());
+		}
+		
+		public void Identify(string registeredId, Dictionary<string, object> properties)
+		{
+			Identify(new Dictionary<string, object>() { { Constants.ID_REGISTERED, registeredId } }, properties);
 		}
 
-		public Infinario (String companyToken, String target){
-			#if UNITY_ANDROID
-			try {
-				implementation = (IInfinarioApi) Activator.CreateInstance(Type.GetType("Infinario.Android.Infinario"), new object[]{companyToken, target});
-				Debug.Log("Found Android Plugin");
-			}
-			catch  {
-				// log exception
-				Debug.Log("Couldn't instantiate native Android Plugin, falling back to Unity-only implementation");
-				implementation = new Unity.Infinario(companyToken, target);
-			}
-			#elif UNITY_IPHONE || UNITY_IOS
-			try{
-				implementation = (IInfinarioApi) Activator.CreateInstance(Type.GetType("Infinario.iOS.Infinario"), new object[]{companyToken, target});
-				Debug.Log("Found iOS Plugin");
-			} catch {
-				Debug.Log("Couldn't instantiate native iOS Plugin, falling back to Unity-only implementation");
-				implementation = new Unity.Infinario(companyToken, target);
-			}
-			#else
-			Debug.Log("Unity Infinario SDK");
-			implementation = new Unity.Infinario(companyToken, target);
-			#endif
+		public void Identify(Dictionary<string, object> customerIds)
+		{
+			Identify (customerIds, new Dictionary<string, object>());
 		}
 
-		public void Identify (String name){
-			this.Identify(name, null);
+		public void Identify(Dictionary<string, object> customerIds, Dictionary<string, object> properties)
+		{
+			implementation.Identify (customerIds, properties);
 		}
 
-		public void Identify (String name, object properties){
-			implementation.Identify(name, properties);
+		public void Track(string type)
+		{
+			Track (type, null, double.NaN);
+		}
+		
+		public void Track(string type, Dictionary<string, object> properties)
+		{
+			Track (type, properties, double.NaN);
+		}
+		
+		public void Track(string type, Dictionary<string, object> properties, double timeStamp)
+		{
+			implementation.Track (type, properties, timeStamp);
+		}
+		
+		public void Update(Dictionary<string, object> properties)
+		{
+			implementation.Update (properties);
+		}
+		
+		public void TrackSessionStart()
+		{
+			TrackSessionStart (null);
 		}
 
-		public void Track (String type){
-			implementation.Track(type);
+		public void TrackSessionStart(Dictionary<string, object> properties)
+		{
+			implementation.TrackSessionStart (properties);
 		}
-
-		public void Track (String type, object properties, long time){
-			implementation.Track(type, properties, time);
+		
+		public void TrackSessionEnd()
+		{
+			TrackSessionEnd (null);
 		}
-
-		public void Track (String type, long time){
-			implementation.Track(type, time);
+		
+		public void TrackSessionEnd(Dictionary<string, object> properties)
+		{
+			implementation.TrackSessionEnd (properties);
 		}
-
-		public void Track (String type, object properties){
-			implementation.Track (type, properties);
-		}
-
-		public void TrackVirtualPayment (String currency, long amount, String itemName, String itemType){
+		
+		public void TrackVirtualPayment(string currency, long amount, string itemName, string itemType)
+		{
 			implementation.TrackVirtualPayment (currency, amount, itemName, itemType);
 		}
 
-		public void TrackAndroidSessionEnd (){
-			implementation.TrackAndroidSessionEnd();
+		public void SessionStatus(bool paused)
+		{
+			SessionStatus (paused, null);
 		}
 
-		public void Update (object properties){
-			implementation.Update (properties);
+		public void SessionStatus(bool paused, Dictionary<string, object> properties)
+		{
+			if (paused)
+			{
+				TrackSessionEnd(properties);
+			} 
+			else
+			{
+				TrackSessionStart(properties);
+			}
 		}
 
-		public void ClearStoredData (){
-			implementation.ClearStoredData ();
-		}
-
-		public void EnablePushNotifications (String senderId,string iconName){
-			implementation.EnablePushNotifications (senderId, iconName);
-		}
-
-		public void EnablePushNotifications (String senderId){
-			implementation.EnablePushNotifications (senderId);
-		}
-
-		public void DisablePushNotifications (){
-			implementation.DisablePushNotifications ();
-		}
-
-		public void EnableAutomaticFlushing (){
-			implementation.EnableAutomaticFlushing ();
-		}
-
-		public void DisableAutomaticFlushing (){
-			implementation.DisableAutomaticFlushing ();
-		}
-
-		public void Flush (){
-			implementation.Flush ();
-		}
-
-		public void SetAppleDeviceToken (){
-			implementation.SetAppleDeviceToken();
-		}
-	}		
+	}
 }
