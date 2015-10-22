@@ -128,6 +128,8 @@ namespace Infinario.Storage
 					return new List<object>();
 				}
 				string serializedQueue = PlayerPrefs.GetString (this.QueueName);
+				if (serializedQueue == "")
+					return new List<object>();
 				List<object> queue = Json.Deserialize (serializedQueue) as List<object>;
 				return queue == null ? new List<object> () : queue;
 			}
