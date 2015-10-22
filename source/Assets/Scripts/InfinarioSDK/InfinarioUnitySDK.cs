@@ -40,13 +40,24 @@ namespace Infinario.SDK
 		{
 			if (customer.ContainsKey (Constants.ID_REGISTERED))
 			{
-				customerIds.Add(Constants.ID_REGISTERED, customer[Constants.ID_REGISTERED]);
-				storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
-				Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
-				Track (Constants.EVENT_IDENTIFICATION, mergedProperties, double.NaN);
-
-				if (properties != null)
-					Update(properties);
+				if (customerIds.ContainsKey(Constants.ID_REGISTERED)) 
+				{
+					customerIds[Constants.ID_REGISTERED] = customer[Constants.ID_REGISTERED];
+				}
+				else
+				{
+					customerIds.Add(Constants.ID_REGISTERED, customer[Constants.ID_REGISTERED]);
+				}
+				
+				if (!customer[Constants.ID_REGISTERED].Equals(storage.GetRegisteredId()))
+				{
+					storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
+					Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
+					Track (Constants.EVENT_IDENTIFICATION, mergedProperties, double.NaN);
+					
+					if (properties != null)
+						Update(properties);
+				}
 			}
 		}
 
