@@ -38,15 +38,19 @@ namespace Infinario.SDK
 
 		public override void Identify(Dictionary<string, object> customer, Dictionary<string, object> properties)
 		{
-			if (customer.ContainsKey (Constants.ID_REGISTERED))
+			if (customer.ContainsKey (Constants.ID_REGISTERED) && customer[Constants.ID_REGISTERED] != null)
 			{
-				customerIds.Add(Constants.ID_REGISTERED, customer[Constants.ID_REGISTERED]);
-				storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
-				Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
-				Track (Constants.EVENT_IDENTIFICATION, mergedProperties, double.NaN);
-
-				if (properties != null)
-					Update(properties);
+				customerIds[Constants.ID_REGISTERED] = customer[Constants.ID_REGISTERED];
+				
+				if (!customer[Constants.ID_REGISTERED].Equals(storage.GetRegisteredId()))
+				{
+					storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
+					Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
+					Track (Constants.EVENT_IDENTIFICATION, mergedProperties, double.NaN);
+					
+					if (properties != null)
+						Update(properties);
+				}
 			}
 		}
 
