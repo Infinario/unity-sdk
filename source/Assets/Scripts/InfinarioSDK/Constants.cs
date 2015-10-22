@@ -6,7 +6,7 @@
          * SDK
          */
 		public static string SDK = "Unity SDK";
-		public static string VERSION = "2.0.0";
+		public static string VERSION = "2.0.1";
 		
 		/**
          * Tracking ids, events and properties
