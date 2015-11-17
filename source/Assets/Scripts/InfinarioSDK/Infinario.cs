@@ -15,6 +15,11 @@ namespace Infinario
 		{
 			//Prepare for wrappers
 			implementation = new SDK.Unity ();
+
+			//Setup decimal separator for numbers
+            var customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;    
 		}
 		
 		public static Infinario GetInstance()
