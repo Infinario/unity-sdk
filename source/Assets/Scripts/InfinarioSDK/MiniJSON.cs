@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Globalization;
 
 namespace Infinario.MiniJSON {
 	// Example usage:
@@ -537,7 +538,8 @@ namespace Infinario.MiniJSON {
 					builder.Append(value);
 				} else if (value is double
 				           || value is decimal) {
-					builder.Append(Convert.ToDouble(value).ToString("R"));
+
+					builder.Append(Convert.ToDouble(value).ToString("R", CultureInfo.InvariantCulture));
 				} else {
 					SerializeString(value.ToString());
 				}
