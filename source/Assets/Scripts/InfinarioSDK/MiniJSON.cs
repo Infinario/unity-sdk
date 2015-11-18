@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Globalization;
 
 namespace Infinario.MiniJSON {
 	// Example usage:
@@ -525,7 +526,7 @@ namespace Infinario.MiniJSON {
 				// They always have, I'm just letting you know.
 				// Previously floats and doubles lost precision too.
 				if (value is float) {
-					builder.Append(((float) value).ToString("R"));
+					builder.Append(((float) value).ToString("R", CultureInfo.InvariantCulture));
 				} else if (value is int
 				           || value is uint
 				           || value is long
@@ -537,7 +538,7 @@ namespace Infinario.MiniJSON {
 					builder.Append(value);
 				} else if (value is double
 				           || value is decimal) {
-					builder.Append(Convert.ToDouble(value).ToString("R"));
+					builder.Append(Convert.ToDouble(value).ToString("R", CultureInfo.InvariantCulture));
 				} else {
 					SerializeString(value.ToString());
 				}
