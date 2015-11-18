@@ -538,9 +538,7 @@ namespace Infinario.MiniJSON {
 					builder.Append(value);
 				} else if (value is double
 				           || value is decimal) {
-					var cultureInfoWithDotSeparator = CultureInfo.InvariantCulture.Clone() as CultureInfo;
-					cultureInfoWithDotSeparator.NumberFormat.NumberDecimalSeparator = ".";
-					builder.Append(Convert.ToDouble(value).ToString("R", cultureInfoWithDotSeparator));
+					builder.Append(Convert.ToDouble(value).ToString("R", CultureInfo.InvariantCulture));
 				} else {
 					SerializeString(value.ToString());
 				}
