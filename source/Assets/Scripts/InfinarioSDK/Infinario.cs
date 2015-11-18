@@ -16,10 +16,11 @@ namespace Infinario
 			//Prepare for wrappers
 			implementation = new SDK.Unity ();
 
-			//Setup decimal separator for numbers
-            var customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-            customCulture.NumberFormat.NumberDecimalSeparator = ".";
-            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;    
+			//Setup decimal separator for numbers. This was an issue when timestamp was converted 
+			//to string in json on some systems which used "," as decimal separator
+			var customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+			customCulture.NumberFormat.NumberDecimalSeparator = ".";
+			System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 		}
 		
 		public static Infinario GetInstance()
