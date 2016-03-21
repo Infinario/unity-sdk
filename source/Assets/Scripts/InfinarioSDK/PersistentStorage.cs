@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infinario.MiniJSON;
 using System;
 using System.Linq;
+using System.Globalization;
 
 namespace Infinario.Storage 
 {
@@ -61,7 +62,7 @@ namespace Infinario.Storage
 		{
 			lock (lockAccess)
 			{
-				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_TIMESTAMP, timestamp.ToString());
+				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_TIMESTAMP, timestamp.ToString("R", CultureInfo.InvariantCulture));
 				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_PROPERTIES, Json.Serialize(properties));
 			}
 		}
@@ -87,7 +88,7 @@ namespace Infinario.Storage
 		{
 			lock (lockAccess)
 			{
-				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_TIMESTAMP, timestamp.ToString());
+				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_TIMESTAMP, timestamp.ToString("R", CultureInfo.InvariantCulture));
 				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_PROPERTIES, Json.Serialize(properties));
 			}
 		}
