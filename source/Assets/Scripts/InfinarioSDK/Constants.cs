@@ -13,8 +13,9 @@
          */
 		public static string ID_REGISTERED = "registered";
 		public static string ID_COOKIE = "cookie";
-		
-		public static string EVENT_SESSION_START = "session_start";
+        public static string ID_USER = "user_id";
+
+        public static string EVENT_SESSION_START = "session_start";
 		public static string EVENT_SESSION_END = "session_end";
 		public static string EVENT_IDENTIFICATION = "identification";
 		public static string EVENT_VIRTUAL_PAYMENT = "virtual_payment";

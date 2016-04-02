@@ -58,7 +58,24 @@ namespace Infinario.Storage
 			}
 		}
 
-		public void SaveSessionStart(double timestamp, Dictionary<string, object> properties)
+        public void SaveUserId(string userId)
+        {
+            lock (lockAccess)
+            {
+                PlayerPrefs.SetString(Constants.ID_USER, userId);
+            }
+        }
+
+        public string GetUserId()
+        {
+            lock (lockAccess)
+            {
+                var userId = PlayerPrefs.GetString(Constants.ID_USER);
+                return (String.IsNullOrEmpty(userId) ? null : userId);
+            }
+        }
+
+        public void SaveSessionStart(double timestamp, Dictionary<string, object> properties)
 		{
 			lock (lockAccess)
 			{
@@ -130,7 +147,11 @@ namespace Infinario.Storage
 			var registered = GetRegisteredId ();
 			if (!string.IsNullOrEmpty (registered)) 
 				ids.Add(Constants.ID_REGISTERED, registered);
-			return ids;
+
+            var userid = GetUserId();
+            if (!string.IsNullOrEmpty(userid))
+                ids.Add(Constants.ID_USER, userid);
+            return ids;
 		}
 	}
 }
