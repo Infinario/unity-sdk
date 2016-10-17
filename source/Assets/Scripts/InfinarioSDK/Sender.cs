@@ -7,6 +7,10 @@ using System.Text;
 
 namespace Infinario.Sender 
 {
+	class InfinarioMonoBehaviour : MonoBehaviour
+    {
+    }
+
 	class Sender
 	{
 		public Sender(string target, PersistentBulkCommandQueue commandQueue)
@@ -22,7 +26,7 @@ namespace Infinario.Sender
 			{
 				var go = new GameObject("Infinario Coroutines");
 				UnityEngine.Object.DontDestroyOnLoad(go);
-				_coroutineObject = go.AddComponent<MonoBehaviour>();
+				_coroutineObject = go.AddComponent<InfinarioMonoBehaviour>();
 			}		
 			_coroutineObject.StartCoroutine (coroutine);
 		}
