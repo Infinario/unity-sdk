@@ -22,7 +22,7 @@ namespace Infinario.Sender
 			{
 				var go = new GameObject("Infinario Coroutines");
 				UnityEngine.Object.DontDestroyOnLoad(go);
-				_coroutineObject = go.AddComponent<MonoBehaviour>();
+				_coroutineObject = go.AddComponent<FakeObject>();
 			}		
 			_coroutineObject.StartCoroutine (coroutine);
 		}
