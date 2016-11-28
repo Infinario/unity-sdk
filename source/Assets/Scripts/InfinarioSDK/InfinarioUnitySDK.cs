@@ -1,4 +1,5 @@
 
+using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Infinario.SDK
 		private string appVersion = null;
 		private Dictionary<string, object> deviceProperties = null;
 		Dictionary<string, object> customerIds = null;
+	    private Sender.Sender sender;
 
 		private static object initializeFinalizeLock = new object();
 		private static object sessionLock = new object();
@@ -33,7 +35,7 @@ namespace Infinario.SDK
 
 			commandQueue = new PersistentBulkCommandQueue ("events", Constants.BULK_LIMIT);
 
-			new Sender.Sender ((target != null) ? target : Constants.DEFAULT_TARGET, commandQueue);
+			sender = new Sender.Sender ((target != null) ? target : Constants.DEFAULT_TARGET, commandQueue);
 		}
 
 		public override void Identify(Dictionary<string, object> customer, Dictionary<string, object> properties)
@@ -168,7 +170,12 @@ namespace Infinario.SDK
 			this.Track(Constants.EVENT_VIRTUAL_PAYMENT, properties, double.NaN);
 		}
 
-		private Dictionary<string, object> MergeAutomaticProperties(Dictionary<string, object> properties)
+	    public override void GetCurrentSegment(string projectSecret, string segmentaionId, Action<bool, ExponeaSegment, string> onSegmentReceiveCallback)
+	    {
+                sender.GetCurrentSegment(customerIds, projectSecret, segmentaionId, onSegmentReceiveCallback);
+	    }
+
+	    private Dictionary<string, object> MergeAutomaticProperties(Dictionary<string, object> properties)
 		{
 			lock (initializeFinalizeLock)
 			{
@@ -191,5 +198,7 @@ namespace Infinario.SDK
 			lst.Add (command.Execute());
 			commandQueue.MultiEnqueue(lst);
 		}
+
+
 	}
 }

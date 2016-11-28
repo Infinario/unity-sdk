@@ -43,10 +43,13 @@
 		public static long BULK_MAX = 60 * 20;
 
 		public static double SESSION_TIMEOUT = 60;
-		
-		public static string DEFAULT_TARGET = "https://api.infinario.com";
+
+	    public static string DEFAULT_SECRET = "X-Infinario-Secret";
+        public static string DEFAULT_TARGET = "https://api.infinario.com";
 		public static string BULK_URL = "/bulk";
 		
+		public static string GET_SEGMENT_URL = "/analytics/segmentation-for";
+
 		public static string ENDPOINT_UPDATE = "crm/customers";
 		public static string ENDPOINT_TRACK = "crm/events";
 	}
