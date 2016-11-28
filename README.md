@@ -111,7 +111,7 @@ infinario.Track("my_player_action", <properties> , <long_your_tsp>);
 ```
 
 ### Get Segment for player
-To obtain players segment information form segmentations you can use method GetCurrentSegment. 
+To obtain player's segment information form segmentations you can use method GetCurrentSegment. 
 You have to specify projectSecret (this is different than projectToken - you can find it in project overview). 
 The second parameter is segmentationId (obtained from last part of url, when creating or  viewing segments). 
 The last one is your callback method with 3 parameters: 
