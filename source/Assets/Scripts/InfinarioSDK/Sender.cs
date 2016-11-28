@@ -140,7 +140,7 @@ namespace Infinario.Sender
 
 
         private IEnumerator GetCurrentSegmentCoroutine(Dictionary<string, object> customerIds, string projectSecret,
-            string segmentationId, Action<bool, ExponeaSegment, string> onSegmentReceiveCallback)
+            string segmentationId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
         {
            
 
@@ -194,7 +194,7 @@ namespace Infinario.Sender
                     {
                         error += exception.Message;
                     }
-	                onSegmentReceiveCallback(true, new ExponeaSegment(segmentName, segmentationName, segmentIndex), error);
+	                onSegmentReceiveCallback(true, new InfinarioSegment(segmentName, segmentationName, segmentIndex), error);
 	            }
 	            else
 	            {
@@ -203,7 +203,7 @@ namespace Infinario.Sender
 	        }
 	    }
 
-	    public void GetCurrentSegment(Dictionary<string, object> customerIds, string projectSecret, string segmentaionId, Action<bool, ExponeaSegment, string> onSegmentReceiveCallback)
+	    public void GetCurrentSegment(Dictionary<string, object> customerIds, string projectSecret, string segmentaionId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
 	    {
 	        StartCoroutine(GetCurrentSegmentCoroutine(customerIds,projectSecret,segmentaionId,onSegmentReceiveCallback));
 	    }

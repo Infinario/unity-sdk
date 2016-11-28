@@ -170,7 +170,7 @@ namespace Infinario.SDK
 			this.Track(Constants.EVENT_VIRTUAL_PAYMENT, properties, double.NaN);
 		}
 
-	    public override void GetCurrentSegment(string projectSecret, string segmentaionId, Action<bool, ExponeaSegment, string> onSegmentReceiveCallback)
+	    public override void GetCurrentSegment(string projectSecret, string segmentaionId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
 	    {
                 sender.GetCurrentSegment(customerIds, projectSecret, segmentaionId, onSegmentReceiveCallback);
 	    }

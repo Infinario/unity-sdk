@@ -5,13 +5,13 @@ using System;
 
 namespace Infinario
 {
-	class ExponeaSegment
+	class InfinarioSegment
 	{
         private string _name;
 	    private string _analysis_name;
 	    private int _index;
 
-        public ExponeaSegment(string name, string analysisName, int index){
+        public InfinarioSegment(string name, string analysisName, int index){
             this._name = name;
             this._analysis_name = analysisName;
             this._index = index;

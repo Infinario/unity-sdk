@@ -126,7 +126,7 @@ namespace Infinario
 			}
 		}
 
-		public void GetCurrentSegment(string projectSecret, string segmentationId, Action<bool, ExponeaSegment, string> onSegmentReceiveCallback)
+		public void GetCurrentSegment(string projectSecret, string segmentationId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
 		{	
 			implementation.GetCurrentSegment(projectSecret, segmentationId, onSegmentReceiveCallback);			
 		}		
