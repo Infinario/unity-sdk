@@ -6,15 +6,16 @@
          * SDK
          */
 		public static string SDK = "Unity SDK";
-		public static string VERSION = "2.0.2";
+		public static string VERSION = "2.0.3";
 		
 		/**
          * Tracking ids, events and properties
          */
 		public static string ID_REGISTERED = "registered";
 		public static string ID_COOKIE = "cookie";
-		
-		public static string EVENT_SESSION_START = "session_start";
+        public static string ID_USER = "user_id";
+
+        public static string EVENT_SESSION_START = "session_start";
 		public static string EVENT_SESSION_END = "session_end";
 		public static string EVENT_IDENTIFICATION = "identification";
 		public static string EVENT_VIRTUAL_PAYMENT = "virtual_payment";
@@ -42,10 +43,13 @@
 		public static long BULK_MAX = 60 * 20;
 
 		public static double SESSION_TIMEOUT = 60;
-		
-		public static string DEFAULT_TARGET = "https://api.infinario.com";
+
+	    public static string DEFAULT_SECRET = "X-Infinario-Secret";
+        public static string DEFAULT_TARGET = "https://api.infinario.com";
 		public static string BULK_URL = "/bulk";
 		
+		public static string GET_SEGMENT_URL = "/analytics/segmentation-for";
+
 		public static string ENDPOINT_UPDATE = "crm/customers";
 		public static string ENDPOINT_TRACK = "crm/events";
 	}

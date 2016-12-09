@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Infinario.Interface;
@@ -32,8 +33,8 @@ namespace Infinario
 		{
 			Initialize (projectToken, null, null);
 		}
-		
-		public void Initialize(string projectToken, string appVersion)
+
+        public void Initialize(string projectToken, string appVersion)
 		{
 			Initialize (projectToken, appVersion, null);
 		}
@@ -124,6 +125,11 @@ namespace Infinario
 				TrackSessionStart(properties);
 			}
 		}
+
+		public void GetCurrentSegment(string projectSecret, string segmentationId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
+		{	
+			implementation.GetCurrentSegment(projectSecret, segmentationId, onSegmentReceiveCallback);			
+		}		
 
 	}
 }

@@ -10,8 +10,18 @@ namespace Infinario
 		public static double GetCurrentTimestamp()
 		{
 			var t0 = DateTime.UtcNow;
-			var tEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
-			return t0.Subtract(tEpoch).TotalMilliseconds / 1000.0;
+            
+            var tEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
+            var tTime = t0.Subtract(tEpoch).TotalMilliseconds / 1000.0;
+           
+            var tSanityDateTime = new DateTime(2020, 1, 1, 0, 0, 0);
+            var tSanity = (tSanityDateTime.Subtract(tEpoch)).TotalMilliseconds / 1000.0;
+            while(tTime > tSanity)
+            {
+                tTime = tTime / 10.0;
+            }
+            
+            return tTime;
 		}
 		
 		public static string GenerateCookieId()
