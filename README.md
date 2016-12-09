@@ -115,9 +115,9 @@ To obtain player's segment information form segmentations you can use method Get
 You have to specify projectSecret (this is different than projectToken - you can find it in project overview). 
 The second parameter is segmentationId (obtained from last part of url, when creating or  viewing segments). 
 The last one is your callback method with 3 parameters: 
-- boolean type specifing if retrieving of segment was successfull
-- InfinarioSegment type with the our desired information about players segment
-- string information about errors that occured
+- `boolean` type specifing if retrieving of segment was successfull
+- `InfinarioSegment` type with the our desired information about players segment
+- `string` information about errors that occured
 ``` 
  infinario.GetCurrentSegment(projectSecret, segmentationId, OnSegmentReceiveCallback);
 
@@ -135,9 +135,9 @@ The last one is your callback method with 3 parameters:
     }
 ```
 InfinarioSegment class object returned in OnSegmentReceiveCallback contains public methods:
-- GetName() returning string name of the segment where player belongs
-- GetSegmentationName() returning string name of segmentation  
-- GetSegmentIndex() returns integer identifying the order of current segment in segmentation (starting with 0) 
+- `GetName()` returning string name of the segment where player belongs
+- `GetSegmentationName()` returning string name of segmentation  
+- `GetSegmentIndex()` returns integer identifying the order of current segment in segmentation (starting with 0) 
 
         
 ### Offline Behavior
