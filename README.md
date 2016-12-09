@@ -116,7 +116,7 @@ You have to specify projectSecret (this is different than projectToken - you can
 The second parameter is segmentationId (obtained from last part of url, when creating or  viewing segments). 
 The last one is your callback method with 3 parameters: 
 - boolean type specifing if retrieving of segment was successfull
-- InfinarioSegment type with the our
+- InfinarioSegment type with the our desired information about players segment
 - string information about errors that occured
 ``` 
  infinario.GetCurrentSegment(projectSecret, segmentationId, OnSegmentReceiveCallback);
