@@ -116,16 +116,16 @@ You have to specify projectSecret (this is different than projectToken - you can
 The second parameter is segmentationId (obtained from last part of url, when creating or  viewing segments). 
 The last one is your callback method with 3 parameters: 
 - boolean type specifing if retrieving of segment was successfull
-- ExponeaSegment type with the our
+- InfinarioSegment type with the our
 - string information about errors that occured
 ``` 
  infinario.GetCurrentSegment(projectSecret, segmentationId, OnSegmentReceiveCallback);
 
- private void OnSegmentReceiveCallback(bool success, ExponeaSegment exponeaSegment, string error)
+ private void OnSegmentReceiveCallback(bool success, InfinarioSegment infinarioSegment, string error)
     {
         if (success)
         {
-            Debug.Log(exponeaSegment);
+            Debug.Log(infinarioSegment);
             // Do stuff according to segment type
         }
         else
@@ -134,8 +134,12 @@ The last one is your callback method with 3 parameters:
         }
     }
 ```
+InfinarioSegment class object returned in OnSegmentReceiveCallback contains public methods:
+- GetName() returning string name of the segment where player belongs
+- GetSegmentationName() returning string name of segmentation  
+- GetSegmentIndex() returns integer identifying the order of current segment in segmentation (starting with 0) 
 
-
+        
 ### Offline Behavior
 
 Once instantized, the SDK collects and sends all tracked events continuously to the Infinario servers. 
