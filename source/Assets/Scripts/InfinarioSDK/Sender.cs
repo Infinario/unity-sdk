@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Infinario.Storage;
 using Infinario.MiniJSON;
 using System.Text;
-
+#if UNITY_5_4_OR_NEWER
+using UnityEngine.Networking;
+#endif
 namespace Infinario.Sender 
 {
 	class Sender
@@ -54,21 +56,36 @@ namespace Infinario.Sender
 					var httpBody = Json.Serialize(new Dictionary<string,object> {{"commands", commands}});
 					byte[] httpBodyBytes = Encoding.UTF8.GetBytes(httpBody);
 					Dictionary<string,string> httpHeaders = new Dictionary<string,string>{ {"Content-type", "application/json"} };
-					
-					// 2. Send the bulk API request
-					WWW req = new WWW(httpTarget, httpBodyBytes, httpHeaders); //TODO: we could add a timeout functionality
-					yield return req;
-					
-					// 3A: Check response for errors
-					if (!string.IsNullOrEmpty(req.error))
+
+                    // 2. Send the bulk API request
+#if UNITY_5_4_OR_NEWER
+                    UnityWebRequest req = new UnityWebRequest(httpTarget, "POST"); //TODO: we could add a timeout functionality
+
+                    foreach (var header in httpHeaders) 
+                        req.SetRequestHeader(header.Key, header.Value);
+
+                    req.uploadHandler = new UploadHandlerRaw(httpBodyBytes);
+                    req.downloadHandler = new DownloadHandlerBuffer();
+
+                    yield return req.Send();
+#else
+                    WWW req = new WWW(httpTarget, httpBodyBytes, httpHeaders); //TODO: we could add a timeout functionality
+                    yield return req;
+#endif                   
+                    // 3A: Check response for errors
+                    if (!string.IsNullOrEmpty(req.error))
 					{
 						consecutiveFailedRequests++;
 					}
 					else
 					{
-						// 3B. Parse the API response
-						var responseBody = req.text;
-						Dictionary<string, object> apiResponse = (Dictionary<string, object>) Json.Deserialize(responseBody);
+                        // 3B. Parse the API response
+#if UNITY_5_4_OR_NEWER
+                        var responseBody = req.downloadHandler.text;
+#else
+                        var responseBody = req.text;
+#endif
+                        Dictionary<string, object> apiResponse = (Dictionary<string, object>) Json.Deserialize(responseBody);
 						bool success = (bool) apiResponse["success"];
 						if(success)
 						{
