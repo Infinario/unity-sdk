@@ -16,8 +16,8 @@ To start tracking, you need to know your `projectToken`. To initialize the track
 var infinario = Infinario.Infinario.GetInstance();
 infinario.Initialize("projectToken");
 
-//or if you want to track app version as well
-infinario.Initilize("projectToken", "1.0.0");
+//or if you want to track app version as well, third parameter is instance
+infinario.Initilize("projectToken", "1.0.0", "https://api.infinario.com");
 ```
 
 Now you can track events by calling the ```Track``` method:
