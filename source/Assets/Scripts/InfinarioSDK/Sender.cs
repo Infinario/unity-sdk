@@ -5,6 +5,7 @@ using Infinario.Storage;
 using Infinario.MiniJSON;
 using System.Text;
 using System;
+using UnityEngine.Networking;
 
 namespace Infinario.Sender
 {
@@ -58,18 +59,19 @@ namespace Infinario.Sender
 
                 if (commands.Count > 0)
                 {
+
                     // 1B: Prepare the http components
                     var httpBody = Json.Serialize(new Dictionary<string, object> {{"commands", commands}});
                     byte[] httpBodyBytes = Encoding.UTF8.GetBytes(httpBody);
-                    Dictionary<string, string> httpHeaders = new Dictionary<string, string>
-                    {
-                        {"Content-type", "application/json"}
-                    };
 
                     // 2. Send the bulk API request
-                    WWW req = new WWW(httpTarget, httpBodyBytes, httpHeaders);
-                        //TODO: we could add a timeout functionality
-                    yield return req;
+                    UnityWebRequest req = new UnityWebRequest(httpTarget, "POST");
+                    req.uploadHandler = (UploadHandler) new UploadHandlerRaw(httpBodyBytes);
+                    req.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+                    req.SetRequestHeader("Content-Type", "application/json");
+
+                    yield return req.SendWebRequest();
+                        
 
                     // 3A: Check response for errors
                     if (!string.IsNullOrEmpty(req.error))
@@ -79,7 +81,7 @@ namespace Infinario.Sender
                     else
                     {
                         // 3B. Parse the API response
-                        var responseBody = req.text;
+                        var responseBody = req.downloadHandler.text;
                         Dictionary<string, object> apiResponse =
                             (Dictionary<string, object>) Json.Deserialize(responseBody);
                         bool success = (bool) apiResponse["success"];
@@ -156,27 +158,28 @@ namespace Infinario.Sender
             };
 
             var httpBody = Json.Serialize(body);
-
             byte[] httpBodyBytes = Encoding.UTF8.GetBytes(httpBody);
-            Dictionary<string, string> httpHeaders = new Dictionary<string, string>
-            {
-                {"Accept", "application/json"},
-                {"Content-type", "application/json"},
-                {Constants.DEFAULT_SECRET, projectSecret} // this needs to be project secret not project token 
-            };
 
-            WWW req = new WWW(httpTarget, httpBodyBytes, httpHeaders); //TODO: we could add a timeout functionality
-            yield return req;
+            // 2. Send the bulk API request
+            UnityWebRequest req = new UnityWebRequest(httpTarget, "POST");
+            req.uploadHandler = (UploadHandler) new UploadHandlerRaw(httpBodyBytes);
+            req.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+            req.SetRequestHeader("Accept", "application/json");
+            req.SetRequestHeader("Content-Type", "application/json");
+            req.SetRequestHeader(Constants.DEFAULT_SECRET, projectSecret);
+
+            yield return req.SendWebRequest();
+
 
             // Check response for errors
             if (!string.IsNullOrEmpty(req.error))
             {
-                onSegmentReceiveCallback(false, null, req.error + "\n " + req.text);
+                onSegmentReceiveCallback(false, null, req.error + "\n " + req.downloadHandler.text);
             }
             else
             {
                 // Parse the API response
-                var responseBody = req.text;
+                var responseBody = req.downloadHandler.text;
                 Dictionary<string, object> apiResponse = (Dictionary<string, object>) Json.Deserialize(responseBody);
                 bool success = (bool) apiResponse["success"];
                 if (success)
@@ -198,7 +201,7 @@ namespace Infinario.Sender
 	            }
 	            else
 	            {
-                    onSegmentReceiveCallback(false, null, "Unsuccessful segmentation request. Response text:\n"+req.text);
+                    onSegmentReceiveCallback(false, null, "Unsuccessful segmentation request. Response text:\n"+req.downloadHandler.text);
                 }
 	        }
 	    }
