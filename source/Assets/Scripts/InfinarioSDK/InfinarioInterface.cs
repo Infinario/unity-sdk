@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Infinario.Interface
 {
@@ -11,5 +12,6 @@ namespace Infinario.Interface
 		public abstract void TrackSessionStart (Dictionary<string, object> properties);
 		public abstract void TrackSessionEnd (Dictionary<string, object> properties);
 		public abstract void TrackVirtualPayment (string currency, long amount, string itemName, string itemType);
+		public abstract void GetCurrentSegment (string projectSecret, string segmentaionId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback);
 	}
 }

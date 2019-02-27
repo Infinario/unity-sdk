@@ -16,8 +16,8 @@ To start tracking, you need to know your `projectToken`. To initialize the track
 var infinario = Infinario.Infinario.GetInstance();
 infinario.Initialize("projectToken");
 
-//or if you want to track app version as well
-infinario.Initilize("projectToken", "1.0.0");
+//or if you want to track app version as well, third parameter is instance
+infinario.Initilize("projectToken", "1.0.0", "https://api.infinario.com");
 ```
 
 Now you can track events by calling the ```Track``` method:
@@ -110,7 +110,36 @@ infinario.Track("my_player_action", <long_your_tsp>);
 infinario.Track("my_player_action", <properties> , <long_your_tsp>);	
 ```
 
+### Get Segment for player
+To obtain player's segment information form segmentations you can use method GetCurrentSegment. 
+You have to specify projectSecret (this is different than projectToken - you can find it in project overview). 
+The second parameter is segmentationId (obtained from last part of url, when creating or  viewing segments). 
+The last one is your callback method with 3 parameters: 
+- `boolean` type specifing if retrieving of segment was successfull
+- `InfinarioSegment` type with the our desired information about players segment
+- `string` information about errors that occured
+``` 
+ infinario.GetCurrentSegment(projectSecret, segmentationId, OnSegmentReceiveCallback);
 
+ private void OnSegmentReceiveCallback(bool success, InfinarioSegment infinarioSegment, string error)
+    {
+        if (success)
+        {
+            Debug.Log(infinarioSegment);
+            // Do stuff according to segment type
+        }
+        else
+        {
+            Debug.LogError(error);
+        }
+    }
+```
+InfinarioSegment class object returned in OnSegmentReceiveCallback contains public methods:
+- `GetName()` returning string name of the segment where player belongs
+- `GetSegmentationName()` returning string name of segmentation  
+- `GetSegmentIndex()` returns integer identifying the order of current segment in segmentation (starting with 0) 
+
+        
 ### Offline Behavior
 
 Once instantized, the SDK collects and sends all tracked events continuously to the Infinario servers. 

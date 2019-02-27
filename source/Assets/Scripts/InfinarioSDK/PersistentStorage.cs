@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infinario.MiniJSON;
 using System;
 using System.Linq;
+using System.Globalization;
 
 namespace Infinario.Storage 
 {
@@ -57,11 +58,28 @@ namespace Infinario.Storage
 			}
 		}
 
-		public void SaveSessionStart(double timestamp, Dictionary<string, object> properties)
+        public void SaveUserId(string userId)
+        {
+            lock (lockAccess)
+            {
+                PlayerPrefs.SetString(Constants.ID_USER, userId);
+            }
+        }
+
+        public string GetUserId()
+        {
+            lock (lockAccess)
+            {
+                var userId = PlayerPrefs.GetString(Constants.ID_USER);
+                return (String.IsNullOrEmpty(userId) ? null : userId);
+            }
+        }
+
+        public void SaveSessionStart(double timestamp, Dictionary<string, object> properties)
 		{
 			lock (lockAccess)
 			{
-				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_TIMESTAMP, timestamp.ToString());
+				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_TIMESTAMP, timestamp.ToString("R", CultureInfo.InvariantCulture));
 				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_START_PROPERTIES, Json.Serialize(properties));
 			}
 		}
@@ -87,7 +105,7 @@ namespace Infinario.Storage
 		{
 			lock (lockAccess)
 			{
-				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_TIMESTAMP, timestamp.ToString());
+				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_TIMESTAMP, timestamp.ToString("R", CultureInfo.InvariantCulture));
 				PlayerPrefs.SetString (Constants.PROPERTY_SESSION_END_PROPERTIES, Json.Serialize(properties));
 			}
 		}
@@ -129,7 +147,11 @@ namespace Infinario.Storage
 			var registered = GetRegisteredId ();
 			if (!string.IsNullOrEmpty (registered)) 
 				ids.Add(Constants.ID_REGISTERED, registered);
-			return ids;
+
+            var userid = GetUserId();
+            if (!string.IsNullOrEmpty(userid))
+                ids.Add(Constants.ID_USER, userid);
+            return ids;
 		}
 	}
 }

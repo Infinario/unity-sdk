@@ -1,4 +1,5 @@
 
+using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Infinario.SDK
 		private string appVersion = null;
 		private Dictionary<string, object> deviceProperties = null;
 		Dictionary<string, object> customerIds = null;
+	    private Sender.Sender sender;
 
 		private static object initializeFinalizeLock = new object();
 		private static object sessionLock = new object();
@@ -33,23 +35,63 @@ namespace Infinario.SDK
 
 			commandQueue = new PersistentBulkCommandQueue ("events", Constants.BULK_LIMIT);
 
-			new Sender.Sender ((target != null) ? target : Constants.DEFAULT_TARGET, commandQueue);
+			sender = new Sender.Sender ((target != null) ? target : Constants.DEFAULT_TARGET, commandQueue);
 		}
 
 		public override void Identify(Dictionary<string, object> customer, Dictionary<string, object> properties)
 		{
-			if (customer.ContainsKey (Constants.ID_REGISTERED) && customer[Constants.ID_REGISTERED] != null)
-			{
-				customerIds[Constants.ID_REGISTERED] = customer[Constants.ID_REGISTERED];
-				
-				if (!customer[Constants.ID_REGISTERED].Equals(storage.GetRegisteredId()))
+			if ((customer.ContainsKey (Constants.ID_REGISTERED) && customer[Constants.ID_REGISTERED] != null) ||
+				(customer.ContainsKey(Constants.ID_USER) && customer[Constants.ID_USER] != null))
+            {
+                if (customer.ContainsKey(Constants.ID_REGISTERED)) 
+                {
+                	customerIds[Constants.ID_REGISTERED] = customer[Constants.ID_REGISTERED];
+                }
+                else
+                {
+                    if (customerIds.ContainsKey(Constants.ID_REGISTERED)) 
+                    {
+                    	customerIds.Remove(Constants.ID_REGISTERED);
+                    }
+                }
+				if (customer.ContainsKey(Constants.ID_USER)) 
 				{
-					storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
-					Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
+					customerIds[Constants.ID_USER] = customer[Constants.ID_USER];
+				}
+                else
+                {
+                    if (customerIds.ContainsKey(Constants.ID_USER)) 
+                    {
+                    	customerIds.Remove(Constants.ID_USER);
+                    }
+                }
+
+                if ((customer.ContainsKey(Constants.ID_REGISTERED) && !customer[Constants.ID_REGISTERED].Equals(storage.GetRegisteredId())) ||
+            		(customer.ContainsKey(Constants.ID_USER) && !customer[Constants.ID_USER].Equals(storage.GetUserId())))
+                {
+                    if (customer.ContainsKey(Constants.ID_REGISTERED)) 
+                    {
+                    	storage.SaveRegisteredId(customer[Constants.ID_REGISTERED].ToString());
+                    }
+                    else 
+                    {
+                    	storage.SaveRegisteredId(null);
+                    }
+                    if (customer.ContainsKey(Constants.ID_USER)) 
+                    {
+                    	storage.SaveUserId(customer[Constants.ID_USER].ToString());
+                    }
+                    else 
+                    {
+                    	storage.SaveUserId(null);
+                    }
+                    Dictionary<string, object> mergedProperties = MergeAutomaticProperties(customer);
 					Track (Constants.EVENT_IDENTIFICATION, mergedProperties, double.NaN);
 					
-					if (properties != null)
+					if (properties != null) 
+					{
 						Update(properties);
+					}
 				}
 			}
 		}
@@ -128,7 +170,12 @@ namespace Infinario.SDK
 			this.Track(Constants.EVENT_VIRTUAL_PAYMENT, properties, double.NaN);
 		}
 
-		private Dictionary<string, object> MergeAutomaticProperties(Dictionary<string, object> properties)
+	    public override void GetCurrentSegment(string projectSecret, string segmentaionId, Action<bool, InfinarioSegment, string> onSegmentReceiveCallback)
+	    {
+                sender.GetCurrentSegment(customerIds, projectSecret, segmentaionId, onSegmentReceiveCallback);
+	    }
+
+	    private Dictionary<string, object> MergeAutomaticProperties(Dictionary<string, object> properties)
 		{
 			lock (initializeFinalizeLock)
 			{
@@ -151,5 +198,7 @@ namespace Infinario.SDK
 			lst.Add (command.Execute());
 			commandQueue.MultiEnqueue(lst);
 		}
+
+
 	}
 }
